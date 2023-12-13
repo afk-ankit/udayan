@@ -17,9 +17,10 @@
     ></script>
   </head>
   <body>
+    <%- include('./layout/navbarFaculty.ejs') %>
     <div class="container p-5">
       <h2><%= project.name %></h2>
-      <p><%= project.id %></p>
+      <p>#<%= project.id %></p>
       <table class="table">
         <thead>
           <tr>
@@ -28,10 +29,13 @@
           </tr>
         </thead>
         <tbody>
+          <% rollNos.forEach(rollNo => { %>
+
           <tr>
-            <td>1</td>
-            <td>Active</td>
+            <td><%= rollNo.s_rollNo %></td>
+            <td><%= rollNo.status %></td>
           </tr>
+          <% }) %>
           <!-- Add more rows as needed -->
         </tbody>
       </table>

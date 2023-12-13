@@ -1,14 +1,15 @@
 const express = require("express");
 const app = express();
-const path = require("path");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
-const checkAuthenticated = require("./middlewares/checkAuth");
 const factulySignin = require("./routes/Faculty/FacultySignin");
 const facultyLogin = require("./routes/Faculty/FacultyLogin");
 const studentSignin = require("./routes/Student/StudentSignin");
 const studentLogin = require("./routes/Student/StudentLogin");
-const projectsRouter = require("./routes/Projects/projects");
+const projectDetails = require("./routes/Faculty/projectDetails");
+const facultyProjectView = require("./routes/Faculty/projectView");
+const studentProjectView = require("./routes/Student/projectView");
+const studentUpdateStatus = require("./routes/Student/studentUpdateStatus");
 const options = {
   host: "localhost",
   port: 3306,
@@ -16,7 +17,7 @@ const options = {
   password: "root",
   database: "project_management_session",
 };
-
+const projectCreate = require("./routes/Faculty/projectCreate");
 const sessionStore = new MySQLStore(options);
 
 app.use(
@@ -36,17 +37,51 @@ app.use(
 );
 app.set("view engine", "ejs");
 app.use(express.json());
+
+function facultyAuthentication(req, res, next) {
+  if (req.session.f_id) {
+    next();
+  } else {
+    res.redirect("/login/faculty");
+  }
+}
+function studentAuthentication(req, res, next) {
+  if (req.session.s_rollNo) {
+    next();
+  } else {
+    res.redirect("/login/student");
+  }
+}
+
 app.get("/", (req, res) => {
   res.render("index");
 });
+
+//faculty
 app.use("/signin/faculty", factulySignin);
-app.use("/signin/student", studentSignin);
 app.use("/login/faculty", facultyLogin);
+app.use("/faculty/projectCreate", facultyAuthentication, projectCreate);
+app.use("/faculty/projectView", facultyAuthentication, facultyProjectView);
+app.use("/faculty/projectDetails", facultyAuthentication, projectDetails);
+//students
+app.use("/signin/student", studentSignin);
 app.use("/login/student", studentLogin);
-app.use("/projects", projectsRouter);
+app.use("/student/projectView", studentAuthentication, studentProjectView);
+app.use("/student/updateStatus", studentAuthentication, studentUpdateStatus);
+//logout
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.redirect("/");
+    }
+    res.clearCookie("session");
+    res.redirect("/");
+  });
+});
+
 //error middle
 app.use((err, req, res, next) => {
-  res.send(err);
+  res.send("ERR HAPPWN");
 });
 app.listen(3000, () => {
   console.log("server running in http://localhost:3000");

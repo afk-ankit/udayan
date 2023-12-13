@@ -17,9 +17,10 @@
     ></script>
   </head>
   <body>
+    <%- include('./layout/navbarFaculty.ejs') %>
     <div class="container p-5">
       <h2 class="mb-3 text-center">Project Creation</h2>
-      <form class="w-50 m-auto" action="#">
+      <form class="w-50 m-auto" action="/faculty/projectCreate" method="post">
         <div class="mb-3">
           <label for="project_id" class="form-label">Project ID</label>
           <input
@@ -27,6 +28,7 @@
             class="form-control"
             id="project_id"
             placeholder="Enter Project ID"
+            name="project_id"
           />
         </div>
         <div class="mb-3">
@@ -36,6 +38,7 @@
             class="form-control"
             id="project_name"
             placeholder="Enter Project Name"
+            name="project_name"
           />
         </div>
         <div class="mb-3">
@@ -46,14 +49,15 @@
             class="form-control"
             id="project_details"
             rows="3"
+            name="project_details"
           ></textarea>
         </div>
         <div class="mb-3">
           <label for="issued_to" class="form-label">Issued To</label>
-          <select multiple class="form-control" id="issued_to">
-            <option value="roll1">Roll Number 1</option>
-            <option value="roll2">Roll Number 2</option>
-            <option value="roll3">Roll Number 3</option>
+          <select multiple class="form-control" id="issued_to" name="issued_to">
+            <% rollNo.forEach(roll => { %>
+            <option value="<%= roll.s_rollNo %>"><%= roll.s_rollNo %></option>
+            <% }) %>
             <!-- Add more options as needed -->
           </select>
           <div id="issued_to" class="form-text">
@@ -62,7 +66,12 @@
         </div>
         <div class="mb-3">
           <label for="due_date" class="form-label">Due Date</label>
-          <input type="date" class="form-control" id="due_date" />
+          <input
+            type="date"
+            class="form-control"
+            id="due_date"
+            name="due_date"
+          />
         </div>
         <button type="submit" class="btn btn-primary w-100">Submit</button>
       </form>

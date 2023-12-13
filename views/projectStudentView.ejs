@@ -17,7 +17,7 @@
     ></script>
   </head>
   <body>
-    <%- include('./layout/navbarFaculty.ejs') %>
+    <%- include('./layout/navbar.ejs') %>
     <div class="container p-5">
       <h2 class="text-center mb-3">Your Projects</h2>
       <table class="table">
@@ -25,26 +25,59 @@
           <tr>
             <th scope="col">p_id</th>
             <th scope="col">p_name</th>
+            <th scope="col">p_details</th>
             <th scope="col">due_date</th>
+            <th scope="col">status</th>
+            <th scope="col">submit</th>
           </tr>
         </thead>
         <tbody>
           <% projects.forEach(project => { %>
+
           <tr>
-            <td>
-              <a
-                href="/faculty/projectDetails/<%= project.p_id %>?name=<%= project.p_name %>"
-                ><%=project.p_id %></a
-              >
-            </td>
+            <td><%= project.p_id %></td>
             <td><%= project.p_name %></td>
+            <td><%= project.p_details %></td>
             <td>
               <%= new Date(project.p_dueDate).toLocaleDateString('en-GB') %>
             </td>
+            <td><%= project.status %></td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="updateStatus('<%= project.s_rollNo%>','<%= project.p_id%>','<%= project.p_dueDate%>')"
+              >
+                Submit
+              </button>
+            </td>
           </tr>
           <% }) %>
+
+          <!-- Add more rows as needed -->
         </tbody>
       </table>
     </div>
+    <script>
+      function updateStatus(s_rollNo, p_id, p_dueDate) {
+        console.log("CLICKED");
+        fetch("/student/updateStatus", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ s_rollNo, p_id, p_dueDate }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Handle response
+            console.log("success");
+            location.reload();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
   </body>
 </html>
